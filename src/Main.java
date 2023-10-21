@@ -1,10 +1,11 @@
+import java.text.ParseException;
+import java.util.List;
 import java.util.Scanner;
 
+
 public class Main {
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws ParseException {
         ReservaFacade reservaFacade = new ReservaFacade();
-
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
@@ -19,54 +20,82 @@ public class Main {
 
             switch (opcao) {
                 case 1:
-                    System.out.print("Número do Quarto: ");
-                    int numeroQuarto = scanner.nextInt();
-
-                    System.out.print("Data de Entrada (dd/MM/yyyy): ");
-                    String dataEntrada = scanner.next();
-
-                    System.out.print("Data de Saída (dd/MM/yyyy): ");
-                    String dataSaida = scanner.next();
-
-                    System.out.print("Nome do Hóspede: ");
-                    String nomeHospede = scanner.next();
-
-                    reservaFacade.fazerReservaQuarto(numeroQuarto, dataEntrada, dataSaida, nomeHospede);
-                    System.out.println();
+                    fazerReserva(reservaFacade, scanner);
                     break;
                 case 2:
-                    System.out.print("Número do Quarto: ");
-                    int numeroQuarto1 = scanner.nextInt();
-                    reservaFacade.cancelarReserva(numeroQuarto1);
-                    System.out.println();
+                    cancelarReserva(reservaFacade, scanner);
                     break;
                 case 3:
-                    System.out.print("Número do Quarto: ");
-                    int numeroQuarto2 = scanner.nextInt();
-                    System.out.print("Valor a ser pago: R$  ");
-                    double valor = scanner.nextInt();
-                    reservaFacade.realizarPagamento(numeroQuarto2, valor);
-                    System.out.println();
+                    realizarPagamento(reservaFacade, scanner);
                     break;
                 case 4:
-                    System.out.print("Número do Quarto: ");
-                    int numeroQuarto3 = scanner.nextInt();
-
-                    System.out.print("Data de Entrada (dd/MM/yyyy): ");
-                    String dataEntrada1 = scanner.next();
-
-                    System.out.print("Data de Saída (dd/MM/yyyy): ");
-                    String dataSaida1 = scanner.next();
-                    reservaFacade.verificarDisponibilidade(numeroQuarto3, dataEntrada1, dataSaida1);
-                    System.out.println();
+                    verificarDisponibilidade(reservaFacade, scanner);
                     break;
                 case 0:
                     scanner.close();
                     return;
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
-                    System.out.println();
             }
+        }
+    }
+
+    private static void fazerReserva(ReservaFacade reservaFacade, Scanner scanner) throws ParseException {
+        System.out.print("Número do Quarto: ");
+        int numeroQuarto = scanner.nextInt();
+
+        System.out.print("Data de Entrada (dd/MM/yyyy): ");
+        String dataEntradaStr = scanner.next();
+
+        System.out.print("Data de Saída (dd/MM/yyyy): ");
+        String dataSaidaStr = scanner.next();
+
+        System.out.print("Nome do Hóspede: ");
+        scanner.nextLine();
+        String nomeHospede = scanner.nextLine();
+
+        reservaFacade.fazerReservaQuarto(numeroQuarto, dataEntradaStr, dataSaidaStr, nomeHospede);
+    }
+
+    private static void cancelarReserva(ReservaFacade reservaFacade, Scanner scanner) {
+        System.out.print("Número do Quarto: ");
+        int numeroQuarto = scanner.nextInt();
+
+        reservaFacade.cancelarReserva(numeroQuarto);
+    }
+
+    private static void realizarPagamento(ReservaFacade reservaFacade, Scanner scanner) {
+        System.out.print("Número do Quarto: ");
+        int numeroQuarto = scanner.nextInt();
+
+        System.out.print("Data de Entrada (dd/MM/yyyy): ");
+        String dataEntradaStr = scanner.next();
+
+        System.out.print("Data de Saída (dd/MM/yyyy): ");
+        String dataSaidaStr = scanner.next();
+
+        try {
+            reservaFacade.realizarPagamento(numeroQuarto, dataEntradaStr, dataSaidaStr);
+        } catch (ParseException e) {
+            System.err.println("Erro ao processar datas. Certifique-se de inserir no formato correto.");
+        }
+    }
+
+    private static void verificarDisponibilidade(ReservaFacade reservaFacade, Scanner scanner) throws ParseException {
+        System.out.print("Número do Quarto: ");
+        int numeroQuarto = scanner.nextInt();
+
+        System.out.print("Data de Entrada (dd/MM/yyyy): ");
+        String dataEntradaStr = scanner.next();
+
+        System.out.print("Data de Saída (dd/MM/yyyy): ");
+        String dataSaidaStr = scanner.next();
+
+        boolean disponivel = reservaFacade.verificarDisponibilidade(numeroQuarto, dataEntradaStr, dataSaidaStr);
+        if (disponivel) {
+            System.out.println("O quarto está disponível para as datas especificadas.");
+        } else {
+            System.out.println("O quarto não está disponível para as datas especificadas.");
         }
     }
 }
